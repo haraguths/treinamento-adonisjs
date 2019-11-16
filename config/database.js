@@ -16,14 +16,14 @@ module.exports = {
   | interacting with SQL databases.
   |
   */
-  connection: Env.get('DB_CONNECTION', 'mysql'),
+  connection: Env.get('DB_CONNECTION', 'postgres'),
 
   /*
   |--------------------------------------------------------------------------
   | Sqlite
   |--------------------------------------------------------------------------
   |
-  | Sqlite is a flat file database and can be a good choice for a development
+  | Sqlite is a flat file database and can be good choice under development
   | environment.
   |
   | npm i --save sqlite3
@@ -34,8 +34,7 @@ module.exports = {
     connection: {
       filename: Helpers.databasePath(`${Env.get('DB_DATABASE', 'development')}.sqlite`)
     },
-    useNullAsDefault: true,
-    debug: Env.get('DB_DEBUG', false)
+    useNullAsDefault: true
   },
 
   /*
@@ -52,17 +51,16 @@ module.exports = {
     client: 'mysql',
     connection: {
       host: Env.get('DB_HOST', 'localhost'),
-      port: Env.get('DB_PORT', '3306'),
+      port: Env.get('DB_PORT', ''),
       user: Env.get('DB_USER', 'root'),
-      password: Env.get('DB_PASSWORD', 'root'),
-      database: Env.get('DB_DATABASE', 'curso')
-    },
-    debug: Env.get('DB_DEBUG', false)
+      password: Env.get('DB_PASSWORD', ''),
+      database: Env.get('DB_DATABASE', 'adonis')
+    }
   },
 
   /*
   |--------------------------------------------------------------------------
-  | PostgreSQL
+  | PostgreSQL pg
   |--------------------------------------------------------------------------
   |
   | Here we define connection settings for PostgreSQL database.
@@ -74,11 +72,10 @@ module.exports = {
     client: 'pg',
     connection: {
       host: Env.get('DB_HOST', 'localhost'),
-      port: Env.get('DB_PORT', ''),
-      user: Env.get('DB_USER', 'root'),
-      password: Env.get('DB_PASSWORD', ''),
-      database: Env.get('DB_DATABASE', 'adonis')
-    },
-    debug: Env.get('DB_DEBUG', false)
+      port: Env.get('DB_PORT', '5432'),
+      user: Env.get('DB_USER', 'postgres'),
+      password: Env.get('DB_PASSWORD', 'root'),
+      database: Env.get('DB_DATABASE', 'cognacast')
+    }
   }
 }
