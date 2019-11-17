@@ -19,7 +19,9 @@ class ClientSeeder {
   async run () {
     const role = await Role.findBy('slug', 'client')
     const clients = await Factory.model('App/models/User').createMany(30)
-    await Promise.all(clients.concat.map(async client => {
+
+    await Promise.all(
+      clients.concat.map(async client => {
       await client.roles().attach([role.id])
     }))
 
