@@ -1,6 +1,9 @@
 'use strict'
 
 const User = use("App/Models/User")
+const Database = use('Database')
+const Role = use('Role')
+const Auth = use('Auth')
 
 class AuthController {
     /**
@@ -8,12 +11,19 @@ class AuthController {
      * @param {email} Email para login
      * @param {senha} Senha do usuário 
      */
-    async register ({ request, auth }) {
-        const { email, password } = request.only(['email', 'password']);
-
-        const token = await auth.attempt(email, password)
-
-        return token
+    async register ({ request, response }) {
+        const trx = await Database.beginTransaction()
+        try {
+          const { name, surname, email, password } = request.all()
+          const user = await User.create({ name, surname, email, password }, trx)
+          const userRole = await Role.findBy('slug', 'client')
+          await user.roles().attach([userRole.id], null, trx)
+          await trx.commit()
+          return response.status(201).send({ data: user})
+        } catch (error) {
+          await trx.rollback()
+          return response.status(201).send({ message: 'Erro ao realizar cadastro!'})
+        }
     }
 
     /**
