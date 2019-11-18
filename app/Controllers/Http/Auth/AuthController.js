@@ -35,16 +35,26 @@ class AuthController {
     }
 
     async refresh({ request, response, auth }) {
-        //
+        var refresh_token = request.input('refresh_token')
+
+        if (!refresh_token) {
+            refresh_token = request.header('refresh_token')
+        }
+
+        const user = await auth.newRefreshToken().generateForRefreshToken()
+
+        return response.send({ data: user })
     }
 
     async logout({ request, response, auth }) {
-        try{
-            await auth.logout()
-        } catch (e){
-            response.send('Erro ao deslogar!')
+        var refresh_token = request.input('refresh_token')
+
+        if (!refresh_token) {
+            refresh_token = request.header('refresh_token')
         }
-        response.send('usuário deslogado com sucesso')
+
+        await auth.authenticator('jwt').revokeTokens([refresh_token], true)
+        return response.status(204).send({})
     }
 
     async forgot({ request, response }) {
