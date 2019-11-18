@@ -6,11 +6,7 @@ const Role = use('Role')
 const Auth = use('Auth')
 
 class AuthController {
-    /**
-     * Método para criar token de autenticação do usuário
-     * @param {email} Email para login
-     * @param {senha} Senha do usuário 
-     */
+
     async register ({ request, response }) {
         const trx = await Database.beginTransaction()
         try {
@@ -26,18 +22,13 @@ class AuthController {
         }
     }
 
-    /**
-     * Método para realizar login do usuário no sistema
-     * @param {email} Email do usuário
-     * @param {password} senha não criptografada
-     */
     async login({ request, response, auth }) {
-        const { email, password } = request.only([ 'email', 'password' ])
+        const { email, password } = request.all()
 
         try{
-            const { token } = await auth.attempt(email, password)
+            let data = await auth.withRefreshToken().attempt(email, password)
 
-            return { token }
+            return response.send({ data })
         } catch(e){
             return auth.token
         }
@@ -47,10 +38,6 @@ class AuthController {
         //
     }
 
-    /**
-     * Método para deslogar usuário do sistema
-     * @param {auth} Autenticação dos dados
-     */
     async logout({ request, response, auth }) {
         try{
             await auth.logout()
