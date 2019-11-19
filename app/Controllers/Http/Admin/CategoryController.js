@@ -28,7 +28,6 @@ class CategoryController {
         message: "Erro ao cadastrar!"
       })
     }
-   
   }
  
   async show ({ params: { id }, request, response, view }) {
@@ -42,7 +41,7 @@ class CategoryController {
     const { title, description, image_id } = request.all()
 
     category.merge({ title, description, image_id })
-    await category.save(category)
+    await category.save()
     
     return response.send(category)
   }
