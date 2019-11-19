@@ -3,7 +3,6 @@
 const User = use("App/Models/User")
 const Database = use('Database')
 const Role = use('Role')
-const Auth = use('Auth')
 
 class AuthController {
 
@@ -41,7 +40,7 @@ class AuthController {
             refresh_token = request.header('refresh_token')
         }
 
-        const user = await auth.newRefreshToken().generateForRefreshToken()
+        const user = await auth.newRefreshToken().generateForRefreshToken(refresh_token)
 
         return response.send({ data: user })
     }
