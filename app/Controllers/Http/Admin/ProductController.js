@@ -29,7 +29,9 @@ class ProductController {
     }
   }
 
-  async show ({ params, request, response, view }) {
+  async show ({ params: { id }, request, response, view }) {
+    const product = await Product.findOrFail(id)
+    return response.send(product)
   }
 
   async update ({ params: { id }, request, response }) {
@@ -48,7 +50,15 @@ class ProductController {
     
   }
 
-  async destroy ({ params, request, response }) {
+  async destroy ({ params: { id }, request, response }) {
+    const product = await Product.findOrFail(id)
+    try {
+      await product.delete()
+      await response.status(204).send()
+    } catch (error) {
+      return response.status(500).send({ message: 'Erro ao deletar produto.'})
+    }
+
   }
 }
 

@@ -1,86 +1,70 @@
 'use strict'
 
+const Product = use('App/Models/User')
 
 class UserController {
-  /**
-   * Show a list of all users.
-   * GET users
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+
+  async index ({ request, response, pagination }) {
+
+    const name = request.input('name')
+    const query = User.query()
+
+    if(title) {
+      query.where('name', 'ILIKE', `%${name}%`)
+      query.orWhere('surname', 'ILIKE', `%${name}%`)
+      query.orWhere('email', 'ILIKE', `%${name}%`)
+
+    }
+
+    const users = await query.paginate(pagination.page, pagination.limit)
+    return response.send(users)
   }
 
-  /**
-   * Render a form to be used for creating a new user.
-   * GET users/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
 
-  /**
-   * Create/save a new user.
-   * POST users
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async store ({ request, response }) {
+    try {
+      const { name, surname, email, password, image_id } = request.all()
+      const user = await User.create({ name, surname, email, password, image_id })
+      return response.status(201).send(user) 
+    } catch (error) {
+      return response.status(400).send({
+        message: "Erro ao cadastrar!"
+      })
+    }
   }
 
-  /**
-   * Display a single user.
-   * GET users/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
+
+  async show ({ params: { id }, response }) {
+    const user = await User.findOrFail(id)
+    return response.send(user)
   }
 
-  /**
-   * Render a form to update an existing user.
-   * GET users/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async update ({ params: { id }, request, response }) {
+    const user = await User.findOrFail(id)
+
+    try {
+      const userData = request.only([name, surname, email, password, image_id ])
+      user.merge(userData)
+      await user.save()
+      return response.status(201).send(user) 
+    } catch (error) {
+      return response.status(400).send({
+        message: "Erro ao editar!"
+      })
+    }
+
   }
 
-  /**
-   * Update user details.
-   * PUT or PATCH users/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
 
-  /**
-   * Delete a user with id.
-   * DELETE users/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
+  async destroy ({ params: { id }, request, response }) {
+    const user = await User.findOrFail(id)
+    try {
+      await User.delete()
+      await response.status(204).send()
+    } catch (error) {
+      return response.status(500).send({ message: 'Erro ao deletar user.'})
+    }
+
   }
 }
 
