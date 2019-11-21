@@ -2,6 +2,7 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
+const { str_random } = use('App/Heçpers')
 
 class PasswordReset extends Model {
     static boot() {

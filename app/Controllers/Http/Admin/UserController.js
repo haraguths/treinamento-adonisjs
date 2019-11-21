@@ -1,6 +1,6 @@
 'use strict'
 
-const Product = use('App/Models/User')
+const User = use('App/Models/User')
 
 class UserController {
 
@@ -9,7 +9,7 @@ class UserController {
     const name = request.input('name')
     const query = User.query()
 
-    if(title) {
+    if(name) {
       query.where('name', 'ILIKE', `%${name}%`)
       query.orWhere('surname', 'ILIKE', `%${name}%`)
       query.orWhere('email', 'ILIKE', `%${name}%`)
@@ -38,7 +38,7 @@ class UserController {
     const user = await User.findOrFail(id)
     return response.send(user)
   }
-
+ 
   async update ({ params: { id }, request, response }) {
     const user = await User.findOrFail(id)
 
@@ -59,7 +59,7 @@ class UserController {
   async destroy ({ params: { id }, request, response }) {
     const user = await User.findOrFail(id)
     try {
-      await User.delete()
+      await user.delete()
       await response.status(204).send()
     } catch (error) {
       return response.status(500).send({ message: 'Erro ao deletar user.'})
