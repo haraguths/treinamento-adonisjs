@@ -61,5 +61,7 @@ const manage_multiple_uploads = async (file, path = null) => {
 }
 
 module.exports = {
-    str_random
+    str_random,
+    manage_sigle_upload,
+    manage_multiple_uploads
 }
