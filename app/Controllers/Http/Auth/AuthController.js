@@ -2,7 +2,7 @@
 
 const User = use("App/Models/User")
 const Database = use('Database')
-const Role = use('Role')
+//const Role = use('Role')
 
 class AuthController {
 
@@ -11,8 +11,8 @@ class AuthController {
         try {
           const { name, surname, email, password } = request.all()
           const user = await User.create({ name, surname, email, password }, trx)
-          const userRole = await Role.findBy('slug', 'client')
-          await user.roles().attach([userRole.id], null, trx)
+          //const userRole = await Role.findBy('slug', 'client')
+          //await user.roles().attach([userRole.id], null, trx)
           await trx.commit()
           return response.status(201).send({ data: user})
         } catch (error) {

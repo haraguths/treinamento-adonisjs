@@ -13,7 +13,6 @@ class UserController {
       query.where('name', 'ILIKE', `%${name}%`)
       query.orWhere('surname', 'ILIKE', `%${name}%`)
       query.orWhere('email', 'ILIKE', `%${name}%`)
-
     }
 
     const users = await query.paginate(pagination.page, pagination.limit)
@@ -32,7 +31,6 @@ class UserController {
       })
     }
   }
-
 
   async show ({ params: { id }, response }) {
     const user = await User.findOrFail(id)

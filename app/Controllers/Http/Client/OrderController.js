@@ -84,6 +84,46 @@ class OrderController {
       })
     }
   }
+
+  async applyDiscount({ params: {id}, request, response }) {
+    const { code } = request.all()
+    const coupon = await coupon.findOrFail('code', code.toUpperCase())
+    const order = await Order.findOrFail(id)
+
+    var discount, info = {}
+
+    try {
+      const service = new Service(order)
+      const canAddDiscount = await service.canApplyDiscount(coupon)
+      const orderDiscount = await order.coupons().getCount()
+
+      const cannApplyToOrder = orderDiscount < 1 || (orderDiscount >= 1 && coupon.recursive)
+      if (canAddDiscount && cannApplyToOrder) {
+        discount = await discount.findOrCreate({
+          order_id = order.id,
+          coupon_id = coupon.id
+        })
+        info.message = 'Cupon aplicado com sucesso!'
+        info.sucess = true
+      } else {
+        info.message = 'Não foi possivel aplicar esse disconto.'
+        info.sucess = false
+      }
+
+      return response.send({ order, info})
+    } catch (error) {
+      return response.status(400).send({ message: 'Erro ao aplicar o cupom!' })
+    }
+
+  }
+
+  async removeDiscount({request, responde }) {
+    const { discount_id } =request.all()
+    const discount = await discount.findOrFail(discount_id)
+    await discount.delete()
+    return response.status(204).send()
+  }
+
 }
 
 module.exports = OrderController
