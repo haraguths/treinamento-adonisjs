@@ -18,5 +18,5 @@ const Route = use('Route')
      Route.get('orders', 'OrderController.put')
 
  })
- .prefix('')
- .namespace('')
+ .prefix('v1')
+ .namespace('Client')

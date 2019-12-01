@@ -8,18 +8,25 @@ const Route = use('Route')
  */
 
  Route.group(() => {
-     Route.post('register', 'AuthController.register').as('auth.register')
-     Route.post('login', 'AuthController.login').as('auth.login')
+     Route.post('register', 'AuthController.register')
+        .as('auth.register')
+        .middleware(['guest'])
+        .validator('Auth/Register')
 
-     Route.post('refresh', 'AuthController.refresh').as('auth.refresh')
-     Route.post('logout', 'AuthController.logout').as('auth.logout')
+     Route.post('login', 'AuthController.login')
+        .as('auth.login')
+        .middleware(['guest'])
+        .validator('Auth/Login')
 
-     Route.post('reset-password', 'AuthController.forgot').as('auth.login')
-     Route.get('reset-password', 'AuthController.remember').as('auth.remember')
-     Route.put('reset-password', 'AuthController.reset').as('auth.reset')
+     Route.post('refresh', 'AuthController.refresh').as('auth.refresh').middleware(['guest'])
+     Route.post('logout', 'AuthController.logout').as('auth.logout').middleware(['auth'])
 
-     Route.get('listTokens', 'AuthController.listTokens').as('auth.listTokens')
-     Route.get('checkLogged', 'AuthController.checkLogged').as('auth.checkLogged')
+     Route.post('reset-password', 'AuthController.forgot').as('auth.login').middleware(['guest'])
+     Route.get('reset-password', 'AuthController.remember').as('auth.remember').middleware(['guest'])
+     Route.put('reset-password', 'AuthController.reset').as('auth.reset').middleware(['guest'])
+
+     Route.get('listTokens', 'AuthController.listTokens').as('auth.listTokens').middleware(['guest'])
+     Route.get('checkLogged', 'AuthController.checkLogged').as('auth.checkLogged').middleware(['guest'])
  })
  .prefix('auth')
  .namespace('Auth')
