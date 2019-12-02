@@ -3,18 +3,21 @@
 const Image = use('App/Models/Image')
 const { manage_single_upload, manage_multiple_uploads } = use('App/Helpers')
 const fs = use('fs')
+const Transformer = use('App/Transformers/Admin/ImageTransformer')
 
 class ImageController {
 
-  async index ({ response, pagination }) {
-    const images = await Image.query()
+  async index ({ response, pagination, transform }) {
+    var images = await Image.query()
       .orderBy('id', 'DESC')
       .paginate(pagination.page, pagination.limit)
+    
+    images = await transform.paginate(images, Transformer)
 
-      return response.send(images)
+    return response.send(images)
   }
 
-  async store ({ request, response }) {
+  async store ({ request, response, transform }) {
     try {
       const fileJar = request.file('images', {
         type: ['image'],
@@ -32,7 +35,9 @@ class ImageController {
             original_name: file.clientName,
             extension: file.subtype
           })
-           images.push(image)
+
+           const transformImage = await transform.item(image, Transformer)
+           images.push(transformImage)
 
            return response.status(201).send({ successes: images, errors: {} })
         }
@@ -52,7 +57,8 @@ class ImageController {
             original_name: file.clientName,
             extension: file.subtype
           })
-          images.push(image)
+          const transformImage = await transform.item(image, Transformer)
+          images.push(transformImage)
         })
       )
       return response.status(201).send({
@@ -65,18 +71,20 @@ class ImageController {
     }
   }
 
-  async show ({ params: { id }, request, response, view }) {
-    const image = await Image.findOrFail(id)
+  async show ({ params: { id }, request, response, transform }) {
+    var image = await Image.findOrFail(id)
+    image = await transform.item(image, Transformer)
     return response.send(image)
   } 
 
-  async update ({ params: { id }, request, response }) {
-    const image = await Image.findOrFail(id)
+  async update ({ params: { id }, request, response, transform }) {
+    var image = await Image.findOrFail(id)
 
     try {
       image.merge(request.only(['original_name']))
       await image.save()
-      response.status(200).send(image)
+      image = await transform.item(image, Transformer)
+      return response.status(200).send(image)
     } catch (error) {
       return response.status(400).send({
         message: 'Não foi possivel alterar'
@@ -92,10 +100,8 @@ class ImageController {
 
       let filePath = Helpers.publicPath(`uploads/${image.path}`)
 
-      await fs.unlink(filePath, err => {
-        if(!err)
-        await image.delete()
-      })
+      fs.unlinkSync(filePath)
+      await image.delete()    
 
       return response.status(204).send()
     } catch (error) {
