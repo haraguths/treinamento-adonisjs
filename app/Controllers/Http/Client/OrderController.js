@@ -37,9 +37,11 @@ class OrderController {
         await service.syncItems(items)
       }
 
-      order = await transform.item(order, Transformer)
-
       await trx.commit()
+
+      order = Order.find(order.id)
+      order = await transform.include('user, items').item(order, Transformer)
+
       return response.status(201).send(order)
     } catch (error) {
       await trx.rollback()
@@ -51,12 +53,14 @@ class OrderController {
 
   async show ({ params: { id }, response, transform }) {
     const order = await Order.findOrFail(id)
-    order = await transform.item(order, Transformer)
+    order = await transform
+      .include('user, items, discount')
+      .item(order, Transformer)
 
     return response.send(order)
   }
 
-  async update ({ params, request, response, transform }) {
+  async update ({ params:{ id }, request, response, transform }) {
     var order = await Order.findOrFail(id)
     const trx = await Database.beginTransaction()
     try {
@@ -66,7 +70,9 @@ class OrderController {
       await service.updateItems(items)
       await order.save(trx)
       await trx.commit()
-      order = await transform.item(order, Transformer)
+      order = await transform
+        .include('user, items, discount, coupons')
+        .item(order, Transformer)
       return response.send(order)
     } catch (error) {
       await trx.rollback()
@@ -77,7 +83,7 @@ class OrderController {
   }
 
 
-  async destroy ({ params, request, response }) {
+  async destroy ({ params: { id }, request, response }) {
     const order = await Order.findOrFail(id)
     const trx = await Database.beginTransaction()
     try {
@@ -116,7 +122,9 @@ class OrderController {
         info.message = 'Não foi possivel aplicar esse disconto.'
         info.sucess = false
       }
-
+      order = await transform
+        .include('user, items, discount, coupons')
+        .item(order, Transformer)
       return response.send({ order, info})
     } catch (error) {
       return response.status(400).send({ message: 'Erro ao aplicar o cupom!' })
