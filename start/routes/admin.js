@@ -34,6 +34,7 @@ const Route = use('Route')
         ['users.update'], ['Admin/StoreUser']
     ]))
 
+    Route.get('dashboard', 'DashboardController.index').as('dashboard')
 
  })
  .prefix('admin')
