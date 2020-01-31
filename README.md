@@ -1,5 +1,5 @@
-## Projeto desenvolvido para a prática do fremework adonisJs, seguindo os passos do curso 
-## "Ecommerce real time com Node.js e Adonis Framework"
+## Projeto desenvolvido para a prática do fremework adonisJs
+seguindo os passos do curso "Ecommerce real time com Node.js e Adonis Framework"
 
 
 # Adonis API application
