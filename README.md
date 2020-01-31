@@ -1,3 +1,7 @@
+## Projeto desenvolvido para a prática do fremework adonisJs, seguindo os passos do curso 
+## "Ecommerce real time com Node.js e Adonis Framework"
+
+
 # Adonis API application
 
 This is the boilerplate for creating an API server in AdonisJs, it comes pre-configured with.
